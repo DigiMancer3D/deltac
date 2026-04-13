@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DELTA CALCULATOR • Emoji Progression Deltas</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&amp;family=Space+Grotesk:wght@500&amp;display=swap');
-
         :root {
             --bg: #05050f;
             --text: #f0f0f0;
@@ -21,7 +19,7 @@
             padding: 0;
             background: radial-gradient(circle at 50% 30%, #112233 0%, #05050f 40%, #000000 80%);
             color: var(--text);
-            font-family: 'Inter', system_ui, sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             line-height: 1.5;
             min-height: 100vh;
             display: flex;
@@ -69,12 +67,13 @@
         }
 
         h1 {
-            font-family: 'Space Grotesk', sans-serif;
+            font-family: system-ui, sans-serif;
             font-size: 2.8rem;
             margin: 0;
             letter-spacing: -2px;
             color: var(--accent);
             text-shadow: 0 0 20px var(--accent);
+            font-weight: 600;
         }
 
         .subtitle {
@@ -338,10 +337,10 @@
             <div class="delta-section">
                 <h3 style="margin:0 0 1.4rem; font-size:1.2rem; color:var(--silver);">PROGRESSION DELTAS • Toggle ON/OFF</h3>
 
-                <!-- Main grid: only the 4 core + Moore's Law -->
+                <!-- Main grid -->
                 <div class="delta-grid" id="delta-toggles"></div>
 
-                <!-- Scrollable section: everything AFTER Moore's Law -->
+                <!-- Scrollable section -->
                 <div id="scrollable-wrapper" class="scrollable-deltas"></div>
             </div>
 
@@ -363,7 +362,6 @@
                     Input interpreted as: <span id="input-interpreted" style="font-family:monospace; color:var(--accent);"></span>
                 </div>
                 <div id="total-delta-info" style="margin-top:1rem; font-size:0.9rem; opacity:0.8; padding:8px 16px; background:rgba(0,255,157,0.1); border-radius:8px;">
-                    <!-- Dynamically filled -->
                 </div>
             </div>
         </div>
@@ -382,7 +380,7 @@
         </div>
 
         <p style="opacity:0.5; font-size:0.85rem; margin-top:1rem;">
-            Self-contained HTML • Dynamic live corrective deltas • Fancy themed scrollbar • Copy &amp; save as .html
+            ✅ Optimized for GitHub Gist preview • Self-contained • No external fonts
         </p>
     </footer>
 
@@ -403,7 +401,6 @@
             baseline: { label: "🔄", value: BASELINE_DELTA, desc: "Corrective Baseline (original v1 limited-scope Human → Machine — positive anchor)" },
             moore: { label: "📈 → ⚡", value: Date.UTC(2024,0,1) - Date.UTC(1965,0,1), desc: "Moore's Law period (1965 paper → 2024 current observation)" },
 
-            // Scrollable section
             usa1: { label: "🦅 → 🌕", value: Date.UTC(1969,6,20) - Date.UTC(1776,6,4), desc: "USA Declaration of Independence → First Moon Landing" },
             usa2: { label: "🚂 → 🌐", value: Date.UTC(1991,0,1) - Date.UTC(1869,5,10), desc: "First US Transcontinental Railroad → Public Internet" },
             usa3: { label: "🚗 → ⚡", value: Date.UTC(2023,0,1) - Date.UTC(1908,0,1), desc: "Ford Model T → Tesla Cybertruck" },
@@ -457,55 +454,40 @@
 
         const totalCount = Object.keys(deltaConfigs).length;
 
-        let activeDeltas = {
-            stage1: true,
-            stage2: true,
-            stage3: true,
-            baseline: true
-        };
-        Object.keys(deltaConfigs).forEach(key => {
-            if (!(key in activeDeltas)) activeDeltas[key] = false;
-        });
+        let activeDeltas = { stage1: true, stage2: true, stage3: true, baseline: true, quantumCorrective: true, ultimateCorrective: true };
+        Object.keys(deltaConfigs).forEach(key => { if (!(key in activeDeltas)) activeDeltas[key] = false; });
 
         function computeReligiousCorrective() {
             const groupSum = religiousGroupKeys.reduce((acc, k) => acc + (activeDeltas[k] ? deltaConfigs[k].value : 0), 0);
-            if (groupSum === 0) return -(Math.random() * 8 + 1);
-            return -Math.floor((groupSum / totalCount) * 10) / 10;
+            return groupSum === 0 ? -(Math.random() * 8 + 1) : -Math.floor((groupSum / totalCount) * 10) / 10;
         }
 
         function computeSocietyCorrective() {
             const groupSum = societyGroupKeys.reduce((acc, k) => acc + (activeDeltas[k] ? deltaConfigs[k].value : 0), 0);
-            if (groupSum === 0) return -(Math.random() * 8 + 1);
-            return -Math.floor((groupSum / totalCount) * 10) / 10;
+            return groupSum === 0 ? -(Math.random() * 8 + 1) : -Math.floor((groupSum / totalCount) * 10) / 10;
         }
 
         function computeQuantumCorrective() {
             const groupSum = computerBasedKeys.reduce((acc, k) => acc + (activeDeltas[k] ? deltaConfigs[k].value : 0), 0);
-            if (groupSum === 0) return -(Math.random() * 8 + 1);
-            return -Math.floor((groupSum / totalCount) * 10) / 10;
+            return groupSum === 0 ? -(Math.random() * 8 + 1) : -Math.floor((groupSum / totalCount) * 10) / 10;
         }
 
         function computeUltimateCorrective() {
             const allActiveSum = Object.keys(deltaConfigs).reduce((acc, k) => {
-                if (activeDeltas[k] && !['religiousCorrective','societyCorrective','quantumCorrective','ultimateCorrective'].includes(k)) {
-                    return acc + deltaConfigs[k].value;
-                }
+                if (activeDeltas[k] && !['religiousCorrective','societyCorrective','quantumCorrective','ultimateCorrective'].includes(k)) return acc + deltaConfigs[k].value;
                 return acc;
             }, 0);
-            if (allActiveSum === 0) return -(Math.random() * 8 + 1);
-            return -Math.floor((allActiveSum / totalCount) * 10) / 10;
+            return allActiveSum === 0 ? -(Math.random() * 8 + 1) : -Math.floor((allActiveSum / totalCount) * 10) / 10;
         }
 
-        let medianYears;
-        function computeMedianYears() {
+        let medianYears = (() => {
             const yearVals = Object.values(deltaConfigs).map(cfg => cfg.value / MS_PER_YEAR);
             yearVals.sort((a, b) => a - b);
             const mid = Math.floor(yearVals.length / 2);
             return yearVals.length % 2 === 0 ? (yearVals[mid - 1] + yearVals[mid]) / 2 : yearVals[mid];
-        }
-        medianYears = computeMedianYears();
+        })();
 
-        function parseInput(inputStr) {
+        function parseInput(inputStr) { /* ... same as before ... */
             const trimmed = inputStr.trim();
             if (/^\d+$/.test(trimmed)) return parseFloat(trimmed);
             const dateTimeParts = trimmed.split(/\s+/);
@@ -542,7 +524,7 @@
             return `${yearStr}-${month}-${day} ${hour}:${minute}:${second} UTC`;
         }
 
-        function renderMainGrid() {
+        function renderMainGrid() { /* ... same logic ... */
             const container = document.getElementById('delta-toggles');
             container.innerHTML = '';
             const coreKeys = ['stage1', 'stage2', 'stage3', 'baseline', 'moore'];
@@ -559,8 +541,7 @@
                     </label>
                     <small>${cfg.value > 0 ? '+' : ''}${(cfg.value / MS_PER_YEAR).toFixed(1)} years</small>
                 `;
-                const checkbox = div.querySelector('input');
-                checkbox.addEventListener('change', handleToggleChange);
+                div.querySelector('input').addEventListener('change', handleToggleChange);
                 container.appendChild(div);
             });
         }
@@ -583,8 +564,7 @@
                         </label>
                         <small>${cfg.value > 0 ? '+' : ''}${(cfg.value / MS_PER_YEAR).toFixed(1)} years</small>
                     `;
-                    const checkbox = div.querySelector('input');
-                    checkbox.addEventListener('change', handleToggleChange);
+                    div.querySelector('input').addEventListener('change', handleToggleChange);
                     container.appendChild(div);
                 }
             });
@@ -602,9 +582,7 @@
             activeDeltas[key] = e.target.checked;
             updateCorrectiveValues();
             renderScrollable();
-            if (document.getElementById('result').style.display === 'block') {
-                calculateZDate();
-            }
+            if (document.getElementById('result').style.display === 'block') calculateZDate();
         }
 
         function useNow() {
@@ -612,7 +590,7 @@
             calculateZDate();
         }
 
-        function calculateZDate() {
+        function calculateZDate() { /* ... same as previous working version ... */
             const inputField = document.getElementById('input').value.trim();
             if (!inputField) { alert('Enter a date, time, or epoch value first'); return; }
 
@@ -653,7 +631,7 @@
             updateMathBreakdown(defaultUsed ? defaultInfo : null);
         }
 
-        function updateMathBreakdown(defaultInfo = null) {
+        function updateMathBreakdown(defaultInfo = null) { /* ... same ... */
             let html = `Let INPUT_EPOCH_MS = [your date in ms]\n\n`;
             let activeCount = Object.values(activeDeltas).filter(Boolean).length;
 
@@ -682,14 +660,13 @@
             document.getElementById('math-breakdown').innerHTML = html;
         }
 
-        // Use DOMContentLoaded for maximum compatibility
         document.addEventListener('DOMContentLoaded', function() {
             updateCorrectiveValues();
             renderMainGrid();
             renderScrollable();
             updateMathBreakdown();
 
-            console.log('%c✅ DELTA CALCULATOR ready • Fixed for Gist preview', 'color:#00ff9d; font-family:monospace; font-size:13px');
+            console.log('%c✅ DELTA CALCULATOR ready • Optimized for GitHub Gist preview', 'color:#00ff9d; font-family:monospace; font-size:13px');
         });
     </script>
 </body>
