@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DELTA CALCULATOR • Emoji Progression Deltas</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&amp;family=Space+Grotesk:wght@500&amp;display=swap');
+
+        :root {
+            --bg: #05050f;
+            --text: #f0f0f0;
+            --accent: #00ff9d;
+            --silver: #c0c0c0;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: radial-gradient(circle at 50% 30%, #112233 0%, #05050f 40%, #000000 80%);
+            color: var(--text);
+            font-family: 'Inter', system_ui, sans-serif;
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -1;
+            background: transparent;
+            box-shadow:
+                120px 80px 1px rgba(255,255,255,0.8),
+                340px 220px 1px rgba(255,255,255,0.7),
+                560px 140px 1px rgba(255,255,255,0.9),
+                780px 310px 1px rgba(255,255,255,0.6),
+                40px 420px 1px rgba(255,255,255,0.8),
+                290px 510px 1px rgba(255,255,255,0.7),
+                670px 650px 1px rgba(255,255,255,0.85),
+                910px 90px 1px rgba(255,255,255,0.65),
+                150px 720px 1px rgba(255,255,255,0.75),
+                480px 810px 1px rgba(255,255,255,0.8),
+                810px 520px 1px rgba(255,255,255,0.7),
+                30px 180px 1px rgba(255,255,255,0.9);
+            animation: twinkle 8s infinite alternate ease-in-out;
+            pointer-events: none;
+            opacity: 0.35;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.25; }
+            100% { opacity: 0.45; }
+        }
+
+        header {
+            background: linear-gradient(90deg, rgba(10,10,30,0.95), rgba(20,20,40,0.95));
+            padding: 2rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid #334455;
+            backdrop-filter: blur(6px);
+        }
+
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.8rem;
+            margin: 0;
+            letter-spacing: -2px;
+            color: var(--accent);
+            text-shadow: 0 0 20px var(--accent);
+        }
+
+        .subtitle {
+            font-size: 1.15rem;
+            opacity: 0.9;
+            max-width: 760px;
+            margin: 0.6rem auto 0;
+            color: var(--silver);
+        }
+
+        main {
+            flex: 1;
+            max-width: 1100px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            width: 100%;
+        }
+
+        .card {
+            background: rgba(15,15,30,0.88);
+            border-radius: 20px;
+            padding: 2.2rem;
+            box-shadow: 0 0 40px rgba(0, 255, 157, 0.15), inset 0 0 60px rgba(0, 255, 157, 0.08);
+            border: 1px solid #334455;
+            backdrop-filter: blur(8px);
+        }
+
+        .delta-section {
+            margin: 1.8rem 0 2rem;
+            padding: 1.5rem;
+            background: rgba(10,10,25,0.75);
+            border-radius: 16px;
+            border: 1px solid #223344;
+        }
+
+        .delta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .delta-toggle {
+            text-align: center;
+            background: rgba(20,20,40,0.6);
+            border-radius: 12px;
+            padding: 12px 8px;
+            transition: all 0.2s ease;
+        }
+
+        .delta-toggle:hover {
+            background: rgba(0,255,157,0.1);
+            transform: translateY(-2px);
+        }
+
+        .delta-label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 2.4rem;
+            line-height: 1;
+            cursor: help;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 62px;
+            height: 30px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #223344;
+            transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background: #ddd;
+            transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background: #00ff9d;
+            box-shadow: 0 0 14px #00ff9d;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(32px);
+        }
+
+        /* SCROLLABLE SECTION */
+        .scrollable-deltas {
+            max-height: 480px; /* ~3 rows visible */
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
+            gap: 1rem;
+            padding-right: 8px;
+            margin-top: 1.5rem;
+            border-top: 1px dashed #334455;
+            padding-top: 1.2rem;
+        }
+
+        .scrollable-deltas::-webkit-scrollbar {
+            width: 9px;
+        }
+        .scrollable-deltas::-webkit-scrollbar-track {
+            background: #112233;
+            border-radius: 9999px;
+            box-shadow: inset 0 0 6px rgba(0,0,0,0.4);
+        }
+        .scrollable-deltas::-webkit-scrollbar-thumb {
+            background: linear-gradient(#00ff9d, #00cc7a);
+            border-radius: 9999px;
+            box-shadow: 0 0 12px #00ff9d, inset 0 0 4px rgba(255,255,255,0.6);
+        }
+        .scrollable-deltas::-webkit-scrollbar-thumb:hover {
+            background: #00ff9d;
+            box-shadow: 0 0 18px #00ff9d;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            min-width: 260px;
+            padding: 16px 20px;
+            font-size: 1.15rem;
+            background: rgba(10,10,25,0.9);
+            border: 2px solid #334455;
+            border-radius: 14px;
+            color: var(--text);
+            font-family: monospace;
+            text-align: center;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 16px var(--accent);
+        }
+
+        button {
+            padding: 16px 32px;
+            font-size: 1.15rem;
+            font-weight: 600;
+            background: var(--accent);
+            color: #000;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px var(--accent);
+        }
+
+        .now-btn {
+            background: #223344;
+            color: var(--text);
+        }
+
+        .result {
+            margin-top: 2rem;
+            padding: 1.8rem;
+            background: rgba(10,10,25,0.9);
+            border-radius: 16px;
+            border: 2px solid #334455;
+            font-family: monospace;
+            box-shadow: 0 0 25px rgba(0, 255, 157, 0.2);
+        }
+
+        .result-label {
+            font-size: 0.95rem;
+            opacity: 0.85;
+            margin-bottom: 6px;
+        }
+
+        .result-value {
+            font-size: 2.4rem;
+            font-weight: 600;
+            letter-spacing: -1px;
+            color: var(--accent);
+            text-shadow: 0 0 15px var(--accent);
+        }
+
+        footer {
+            background: rgba(10,10,25,0.92);
+            border-top: 1px solid #334455;
+            padding: 2rem 1rem;
+            font-size: 0.95rem;
+            max-width: 1100px;
+            margin: 0 auto;
+            width: 100%;
+            backdrop-filter: blur(6px);
+        }
+
+        .math-section {
+            background: rgba(5,5,15,0.95);
+            padding: 1.8rem;
+            border-radius: 16px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            line-height: 1.7;
+            border: 1px solid #445566;
+            box-shadow: 0 0 20px rgba(0, 255, 157, 0.15);
+            text-align: left;
+        }
+
+        .math-title {
+            font-weight: 600;
+            margin-bottom: 1.2rem;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .explanation {
+            margin-top: 1.6rem;
+            font-size: 0.95rem;
+            opacity: 0.9;
+            line-height: 1.65;
+            text-align: center;
+        }
+
+        .delta-toggle small {
+            display: block;
+            font-size: 0.72rem;
+            opacity: 0.65;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>DELTA CALCULATOR</h1>
+        <p class="subtitle">Find "How Long [un]Till" (HLT) based on Known Historical Deltas</p>
+    </header>
+
+    <main>
+        <div class="card">
+            <h2 style="margin:0 0 1.2rem; font-size:1.45rem;">Toggle any delta &amp; Enter any date |OR| Epoch</h2>
+
+            <div class="delta-section">
+                <h3 style="margin:0 0 1.4rem; font-size:1.2rem; color:var(--silver);">PROGRESSION DELTAS • Toggle ON/OFF</h3>
+
+                <!-- Main grid: only the 4 core + Moore's Law -->
+                <div class="delta-grid" id="delta-toggles">
+                    <!-- Populated by JS -->
+                </div>
+
+                <!-- Scrollable section: everything AFTER Moore's Law (including quantum + correctives) -->
+                <div id="scrollable-wrapper" class="scrollable-deltas">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <div class="input-group" style="display:flex; gap:14px; flex-wrap:wrap; justify-content:center; align-items:flex-end;">
+                <div style="flex:1; max-width:380px;">
+                    <label style="display:block; margin-bottom:8px; font-size:0.95rem; opacity:0.85;">Input Date / Epoch (ms)</label>
+                    <input type="text" id="input" placeholder="2025/04/13 14:26:00  or  1744553160000" value="">
+                </div>
+
+                <button onclick="useNow()" class="now-btn">NOW</button>
+                <button onclick="calculateZDate()">CALCULATE DELTA OUTPUT</button>
+            </div>
+
+            <div id="result" class="result" style="display:none;">
+                <div class="result-label">PROJECTED DELTA DATE (UTC) — CONFIGURABLE PROGRESSION OUTPUT</div>
+                <div id="zdate-formatted" class="result-value"></div>
+                <div id="zdate-epoch" class="epoch" style="font-size:1rem; opacity:0.85; margin-top:8px;"></div>
+                <div style="margin-top:14px; font-size:0.95rem; opacity:0.8;">
+                    Input interpreted as: <span id="input-interpreted" style="font-family:monospace; color:var(--accent);"></span>
+                </div>
+                <div id="total-delta-info" style="margin-top:1rem; font-size:0.9rem; opacity:0.8; padding:8px 16px; background:rgba(0,255,157,0.1); border-radius:8px;">
+                    <!-- Dynamically filled -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="math-section">
+            <div class="math-title">📐 LIVE MATHS (only active deltas shown • default formula if none)</div>
+            <div id="math-breakdown" style="text-align:left;"></div>
+
+            <div id="explanation-text" class="explanation">
+                <strong>Configurable equation</strong><br>
+                DELTA DATE = INPUT_EPOCH + SUM(of all toggled deltas)<br><br>
+                Only the four core deltas start ON. All corrective deltas are now fully dynamic and update live when you toggle any other delta. Quantum corrective is based on all computer-based deltas. If a corrective group has no active deltas, it uses a random value between -1 and -9 years. Hover any emoji for tooltip.
+            </div>
+        </div>
+
+        <p style="opacity:0.5; font-size:0.85rem; margin-top:1rem;">
+            Self-contained HTML • Dynamic live corrective deltas • Fancy themed scrollbar • Copy &amp; save as .html
+        </p>
+    </footer>
+
+    <script>
+        const MS_PER_YEAR = 31557600000;
+
+        const HUMAN_EARLY_EPOCH   = Date.UTC(1958, 9, 1, 0, 0, 0);
+        const MACHINE_FIRST_EPOCH = Date.UTC(1969, 6, 20, 20, 17, 40);
+        const AI_FIRST_EPOCH      = Date.UTC(2024, 2, 12, 0, 0, 0);
+        const LLM_FIRST_EPOCH     = Date.UTC(2018, 5, 11, 0, 0, 0);
+
+        const BASELINE_DELTA      = HUMAN_EARLY_EPOCH - MACHINE_FIRST_EPOCH;
+
+        let deltaConfigs = {
+            stage1: { label: "👤 → ⚙️", value: MACHINE_FIRST_EPOCH - HUMAN_EARLY_EPOCH, desc: "Human Computers → 1st Machine Computers (1958 NASA → 1969 Apollo 11)" },
+            stage2: { label: "⚙️ → 🤖", value: AI_FIRST_EPOCH - MACHINE_FIRST_EPOCH, desc: "1st Machine Computers → 1st AI that writes its own code (1969 → 2024 Devin)" },
+            stage3: { label: "🧠 → 🤖", value: AI_FIRST_EPOCH - LLM_FIRST_EPOCH, desc: "1st LLM → 1st AI (2018 GPT-1 → 2024 Devin) — positive" },
+            baseline: { label: "🔄", value: BASELINE_DELTA, desc: "Corrective Baseline (original v1 limited-scope Human → Machine — positive anchor)" },
+            moore: { label: "📈 → ⚡", value: Date.UTC(2024,0,1) - Date.UTC(1965,0,1), desc: "Moore's Law period (1965 paper → 2024 current observation)" },
+
+            // === SCROLLABLE SECTION STARTS HERE ===
+            usa1: { label: "🦅 → 🌕", value: Date.UTC(1969,6,20) - Date.UTC(1776,6,4), desc: "USA Declaration of Independence → First Moon Landing" },
+            usa2: { label: "🚂 → 🌐", value: Date.UTC(1991,0,1) - Date.UTC(1869,5,10), desc: "First US Transcontinental Railroad → Public Internet" },
+            usa3: { label: "🚗 → ⚡", value: Date.UTC(2023,0,1) - Date.UTC(1908,0,1), desc: "Ford Model T → Tesla Cybertruck" },
+            global1: { label: "🪨 → 🚗", value: Date.UTC(1886,0,1) - Date.UTC(-3500,0,1), desc: "Invention of the Wheel → First practical automobile" },
+            global2: { label: "📜 → 💻", value: Date.UTC(1989,0,1) - Date.UTC(-3200,0,1), desc: "Invention of Writing → World Wide Web" },
+            global3: { label: "🌾 → 🏭", value: Date.UTC(1760,0,1) - Date.UTC(-10000,0,1), desc: "Agricultural Revolution → Industrial Revolution" },
+            brit1: { label: "📜 → 🇪🇺", value: Date.UTC(2016,6,23) - Date.UTC(1215,6,15), desc: "Magna Carta → Brexit referendum" },
+            brit2: { label: "🏰 → 🏭", value: Date.UTC(1760,0,1) - Date.UTC(1066,0,1), desc: "Battle of Hastings → Start of British Industrial Revolution" },
+            brit3: { label: "⛵ → 🗺️", value: Date.UTC(1997,6,30) - Date.UTC(1583,0,1), desc: "First British Empire colony → Hong Kong handover" },
+            viking1: { label: "🛡️ → ⛪", value: Date.UTC(1066,0,1) - Date.UTC(793,0,1), desc: "First Viking raid (Lindisfarne) → End of Viking Age" },
+            viking2: { label: "🛶 → 🚢", value: Date.UTC(1800,0,1) - Date.UTC(800,0,1), desc: "Viking longship → First practical steamship" },
+            viking3: { label: "🪓 → ✝️", value: Date.UTC(1100,0,1) - Date.UTC(850,0,1), desc: "Viking raids peak → Christianization of Scandinavia" },
+            jesusCatholic: { label: "⛪ → ✝️", value: Date.UTC(30,0,1) - Date.UTC(380,0,1), desc: "Start of Roman Catholic Church → Death of Jesus" },
+            christianityRomans: { label: "📜 → 🕊️", value: Date.UTC(30,0,1) - Date.UTC(112,0,1), desc: "First Roman mention of Jesus → Start of Christianity" },
+            popeAvg: { label: "⛪ → 👑", value: 8 * MS_PER_YEAR, desc: "Average papal reign length" },
+            kingAvg: { label: "👑 → 🏰", value: 20 * MS_PER_YEAR, desc: "Average major king / monarch reign length" },
+            presidentAvg: { label: "🦅 → 📅", value: 5.5 * MS_PER_YEAR, desc: "Average US President term length" },
+            senateAvg: { label: "🏛️ → 🪑", value: 6 * MS_PER_YEAR, desc: "Average US Senate term length" },
+            congressAvg: { label: "🏛️ → 🪑", value: 2 * MS_PER_YEAR, desc: "Average US Congress / House term length" },
+            ytFame: { label: "📹 → ⭐", value: 5 * MS_PER_YEAR, desc: "Average YouTube streamer fame span" },
+            twitchFame: { label: "🎮 → ⭐", value: 4 * MS_PER_YEAR, desc: "Average Twitch streamer fame span" },
+            famousPerson: { label: "🌟 → ⏳", value: 10 * MS_PER_YEAR, desc: "Average famous person recognition span" },
+            lifespanBC: { label: "🪨 → 🪦", value: 30 * MS_PER_YEAR, desc: "Average human lifespan — B.C. era" },
+            lifespanMedieval: { label: "🏰 → 🪦", value: 35 * MS_PER_YEAR, desc: "Average human lifespan — Medieval era" },
+            lifespan1800s: { label: "🧥 → 🪦", value: 40 * MS_PER_YEAR, desc: "Average human lifespan — 1800s" },
+            lifespan1900s: { label: "🏭 → 🪦", value: 50 * MS_PER_YEAR, desc: "Average human lifespan — 1900s" },
+            lifespan2000s: { label: "💻 → 🪦", value: 72 * MS_PER_YEAR, desc: "Average human lifespan — 2000–2020s" },
+            lifespanCurrent: { label: "📱 → 🪦", value: 73 * MS_PER_YEAR, desc: "Average human lifespan — current (2020s)" },
+            gpuLife: { label: "🎮 → 🔌", value: 5 * MS_PER_YEAR, desc: "Average modern GPU lifespan" },
+            cpuLife: { label: "💻 → 🔌", value: 6 * MS_PER_YEAR, desc: "Average modern CPU lifespan" },
+            pc808: { label: "🖥️ → 🔌", value: 8 * MS_PER_YEAR, desc: "Average 8086-era PC lifespan" },
+            windowsPC: { label: "🪟 → 🔌", value: 5 * MS_PER_YEAR, desc: "Average Windows PC lifespan" },
+            linuxPC: { label: "🐧 → 🔌", value: 7 * MS_PER_YEAR, desc: "Average Linux PC lifespan" },
+            desktopLife: { label: "🖥️ → 🔌", value: 6 * MS_PER_YEAR, desc: "Average desktop lifespan" },
+            laptopLife: { label: "💼 → 🔌", value: 4 * MS_PER_YEAR, desc: "Average laptop lifespan" },
+            phoneLife: { label: "📱 → 🔌", value: 3 * MS_PER_YEAR, desc: "Average smartphone lifespan" },
+            iphoneAndroidDiff: { label: "🍎 → 🤖", value: 1 * MS_PER_YEAR, desc: "iPhone vs Android average lifespan difference" },
+            quantum1: { label: "⚛️ → 🖥️", value: Date.UTC(2019,9,23) - Date.UTC(1998,0,1), desc: "First practical quantum computer (1998) → Quantum supremacy (Google 2019)" },
+            quantum2: { label: "🔬 → ☁️", value: Date.UTC(2023,0,1) - Date.UTC(2016,5,1), desc: "IBM Quantum Experience cloud launch (2016) → 2023 scaling" },
+            quantum3: { label: "🧪 → 🌐", value: Date.UTC(2024,0,1) - Date.UTC(2021,0,1), desc: "Quantum error correction breakthrough (2021) → Current quantum internet prototypes" },
+            quantum4: { label: "📡 → ⚛️", value: Date.UTC(2025,0,1) - Date.UTC(2022,0,1), desc: "Quantum networking milestones (2020) → Projected quantum advantage (2025)" },
+
+            // Corrective deltas (dynamic - values set at runtime)
+            religiousCorrective: { label: "✝️ → 📏", value: 0, desc: "Religious Corrective — live sum of religious deltas ÷ total deltas (negative)" },
+            societyCorrective: { label: "🏛️ → 📏", value: 0, desc: "Society Corrective — live sum of society deltas ÷ total deltas (negative)" },
+            quantumCorrective: { label: "⚛️ → 📏", value: 0, desc: "Quantum Corrective — live sum of all computer-based deltas ÷ total deltas (negative)" },
+            ultimateCorrective: { label: "🛡️ → ⚖️", value: 0, desc: "Ultimate Corrective — live sum of ALL deltas ÷ total deltas (negative)" }
+        };
+
+        // Groups for dynamic corrective calculation
+        const religiousGroupKeys = ['jesusCatholic', 'christianityRomans', 'popeAvg', 'kingAvg'];
+        const societyGroupKeys = ['ytFame','twitchFame','famousPerson','lifespanBC','lifespanMedieval','lifespan1800s','lifespan1900s','lifespan2000s','lifespanCurrent','gpuLife','cpuLife','pc808','windowsPC','linuxPC','desktopLife','laptopLife','phoneLife','iphoneAndroidDiff'];
+        const computerBasedKeys = ['stage1','stage2','stage3','moore','gpuLife','cpuLife','pc808','windowsPC','linuxPC','desktopLife','laptopLife','phoneLife','iphoneAndroidDiff','quantum1','quantum2','quantum3','quantum4'];
+
+        const totalCount = Object.keys(deltaConfigs).length;
+
+        // Only these four start ON
+        let activeDeltas = {
+            stage1: true,
+            stage2: true,
+            stage3: true,
+            baseline: true,
+            quantumCorrective: true,
+            ultimateCorrective: true
+        };
+        Object.keys(deltaConfigs).forEach(key => {
+            if (!(key in activeDeltas)) activeDeltas[key] = false;
+        });
+
+        // Dynamic corrective computation functions
+        function computeReligiousCorrective() {
+            const groupSum = religiousGroupKeys.reduce((acc, k) => acc + (activeDeltas[k] ? deltaConfigs[k].value : 0), 0);
+            if (groupSum === 0) return -(Math.random() * 8 + 1); // random -1 to -9 when no base religious deltas active
+            return -Math.floor((groupSum / totalCount) * 10) / 10;
+        }
+
+        function computeSocietyCorrective() {
+            const groupSum = societyGroupKeys.reduce((acc, k) => acc + (activeDeltas[k] ? deltaConfigs[k].value : 0), 0);
+            if (groupSum === 0) return -(Math.random() * 8 + 1);
+            return -Math.floor((groupSum / totalCount) * 10) / 10;
+        }
+
+        function computeQuantumCorrective() {
+            const groupSum = computerBasedKeys.reduce((acc, k) => acc + (activeDeltas[k] ? deltaConfigs[k].value : 0), 0);
+            if (groupSum === 0) return -(Math.random() * 8 + 1);
+            return -Math.floor((groupSum / totalCount) * 10) / 10;
+        }
+
+        function computeUltimateCorrective() {
+            const allActiveSum = Object.keys(deltaConfigs).reduce((acc, k) => {
+                if (activeDeltas[k] && !['religiousCorrective','societyCorrective','quantumCorrective','ultimateCorrective'].includes(k)) {
+                    return acc + deltaConfigs[k].value;
+                }
+                return acc;
+            }, 0);
+            if (allActiveSum === 0) return -(Math.random() * 8 + 1);
+            return -Math.floor((allActiveSum / totalCount) * 10) / 10;
+        }
+
+        // Median
+        let medianYears;
+        function computeMedianYears() {
+            const yearVals = Object.values(deltaConfigs).map(cfg => cfg.value / MS_PER_YEAR);
+            yearVals.sort((a, b) => a - b);
+            const mid = Math.floor(yearVals.length / 2);
+            return yearVals.length % 2 === 0 ? (yearVals[mid - 1] + yearVals[mid]) / 2 : yearVals[mid];
+        }
+        medianYears = computeMedianYears();
+
+        function parseInput(inputStr) {
+            const trimmed = inputStr.trim();
+            if (/^\d+$/.test(trimmed)) return parseFloat(trimmed);
+            const dateTimeParts = trimmed.split(/\s+/);
+            if (dateTimeParts.length >= 1) {
+                const dateStr = dateTimeParts[0];
+                const timeStr = dateTimeParts[1] || '00:00:00';
+                const dateParts = dateStr.split('/');
+                if (dateParts.length === 3) {
+                    const year = parseInt(dateParts[0], 10);
+                    const month = parseInt(dateParts[1], 10) - 1;
+                    const day = parseInt(dateParts[2], 10);
+                    const timeParts = timeStr.split(':');
+                    const hour = parseInt(timeParts[0] || '0', 10);
+                    const minute = parseInt(timeParts[1] || '0', 10);
+                    const second = parseInt(timeParts[2] || '0', 10);
+                    return Date.UTC(year, month, day, hour, minute, second);
+                }
+            }
+            const nativeDate = new Date(trimmed);
+            if (!isNaN(nativeDate.getTime())) return nativeDate.getTime();
+            return null;
+        }
+
+        function formatDateTime(epochMs) {
+            if (!isFinite(epochMs)) return 'Infinity (too far future)';
+            const date = new Date(epochMs);
+            let year = date.getUTCFullYear();
+            const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+            const day = String(date.getUTCDate()).padStart(2, '0');
+            const hour = String(date.getUTCHours()).padStart(2, '0');
+            const minute = String(date.getUTCMinutes()).padStart(2, '0');
+            const second = String(date.getUTCSeconds()).padStart(2, '0');
+            let yearStr = year < 0 ? '-' + String(Math.abs(year)).padStart(4, '0') : String(year);
+            return `${yearStr}-${month}-${day} ${hour}:${minute}:${second} UTC`;
+        }
+
+        function renderMainGrid() {
+            const container = document.getElementById('delta-toggles');
+            container.innerHTML = '';
+            const coreKeys = ['stage1', 'stage2', 'stage3', 'baseline', 'moore'];
+            coreKeys.forEach(key => {
+                const cfg = deltaConfigs[key];
+                const isActive = activeDeltas[key];
+                const div = document.createElement('div');
+                div.className = 'delta-toggle';
+                div.innerHTML = `
+                    <div class="delta-label" title="${cfg.desc}">${cfg.label}</div>
+                    <label class="switch">
+                        <input type="checkbox" ${isActive ? 'checked' : ''} data-key="${key}">
+                        <span class="slider"></span>
+                    </label>
+                    <small>${cfg.value > 0 ? '+' : ''}${(cfg.value / MS_PER_YEAR).toFixed(1)} years</small>
+                `;
+                const checkbox = div.querySelector('input');
+                checkbox.addEventListener('change', handleToggleChange);
+                container.appendChild(div);
+            });
+        }
+
+        function renderScrollable() {
+            const container = document.getElementById('scrollable-wrapper');
+            container.innerHTML = '';
+            const coreKeys = ['stage1', 'stage2', 'stage3', 'baseline', 'moore'];
+            Object.keys(deltaConfigs).forEach(key => {
+                if (!coreKeys.includes(key)) {
+                    const cfg = deltaConfigs[key];
+                    const isActive = activeDeltas[key];
+                    const div = document.createElement('div');
+                    div.className = 'delta-toggle';
+                    div.innerHTML = `
+                        <div class="delta-label" title="${cfg.desc}">${cfg.label}</div>
+                        <label class="switch">
+                            <input type="checkbox" ${isActive ? 'checked' : ''} data-key="${key}">
+                            <span class="slider"></span>
+                        </label>
+                        <small>${cfg.value > 0 ? '+' : ''}${(cfg.value / MS_PER_YEAR).toFixed(1)} years</small>
+                    `;
+                    const checkbox = div.querySelector('input');
+                    checkbox.addEventListener('change', handleToggleChange);
+                    container.appendChild(div);
+                }
+            });
+        }
+
+        function updateCorrectiveValues() {
+            deltaConfigs.religiousCorrective.value = computeReligiousCorrective();
+            deltaConfigs.societyCorrective.value = computeSocietyCorrective();
+            deltaConfigs.quantumCorrective.value = computeQuantumCorrective();
+            deltaConfigs.ultimateCorrective.value = computeUltimateCorrective();
+        }
+
+        function handleToggleChange(e) {
+            const key = e.target.dataset.key;
+            activeDeltas[key] = e.target.checked;
+
+            // Recompute all corrective values (they are now fully live)
+            updateCorrectiveValues();
+
+            // Re-render only the scrollable section (preserves main grid)
+            renderScrollable();
+
+            // If a result is visible, update it immediately
+            if (document.getElementById('result').style.display === 'block') {
+                calculateZDate();
+            }
+        }
+
+        function useNow() {
+            document.getElementById('input').value = Date.now();
+            calculateZDate();
+        }
+
+        function calculateZDate() {
+            const inputField = document.getElementById('input').value.trim();
+            if (!inputField) { alert('Enter a date, time, or epoch value first'); return; }
+
+            const inputEpoch = parseInput(inputField);
+            if (inputEpoch === null) { alert('Invalid format. Use yyyy/mm/dd hh:mm:ss or raw epoch number'); return; }
+
+            let activeCount = Object.values(activeDeltas).filter(Boolean).length;
+            let totalDelta = 0;
+            let defaultUsed = false;
+            let defaultInfo = '';
+            let randExpUsed = null;
+
+            if (activeCount === 0) {
+                defaultUsed = true;
+                randExpUsed = Math.floor(Math.random() * 3) + 1;
+                const piVal = Math.pow(3.14, randExpUsed);
+                const baseChangeYears = (piVal / medianYears) + 1;
+                totalDelta = baseChangeYears * MS_PER_YEAR;
+                defaultInfo = `(((3.14^${randExpUsed}) / ${medianYears.toFixed(3)}) + 1) ≈ ${baseChangeYears.toFixed(3)} years`;
+            } else {
+                Object.keys(deltaConfigs).forEach(key => {
+                    if (activeDeltas[key]) totalDelta += deltaConfigs[key].value;
+                });
+            }
+
+            const zEpoch = inputEpoch + totalDelta;
+
+            document.getElementById('zdate-formatted').textContent = formatDateTime(zEpoch);
+            document.getElementById('zdate-epoch').innerHTML = `Epoch: <strong>${Math.floor(zEpoch)}</strong> ms`;
+            document.getElementById('input-interpreted').textContent = `${inputField} → ${formatDateTime(inputEpoch)}`;
+            document.getElementById('result').style.display = 'block';
+
+            const infoHTML = defaultUsed
+                ? `<strong>Default base change applied (no deltas selected):</strong><br>+(((3.14<sup>${randExpUsed}</sup>)/${medianYears.toFixed(3)})+1) years ≈ ${defaultInfo.split('≈')[1]}<br><span style="font-size:0.8rem;">(random exponent chosen this calculation)</span>`
+                : `<strong>Total progression delta applied:</strong> ${totalDelta.toLocaleString()} ms <span style="font-size:0.85rem; opacity:0.75;">(${activeCount} deltas active)</span>`;
+            document.getElementById('total-delta-info').innerHTML = infoHTML;
+
+            updateMathBreakdown(defaultUsed ? defaultInfo : null);
+        }
+
+        function updateMathBreakdown(defaultInfo = null) {
+            let html = `Let INPUT_EPOCH_MS = [your date in ms]\n\n`;
+            let activeCount = Object.values(activeDeltas).filter(Boolean).length;
+
+            if (activeCount === 0) {
+                html += `// NO DELTAS SELECTED — USING DEFAULT BASE CHANGE\n`;
+                html += `Let MEDIAN_YEARS = ${medianYears.toFixed(3)}\n`;
+                html += `Let RAND_EXP = random integer ∈ {1, 2, 3}\n`;
+                html += `Let DEFAULT_BASE_CHANGE_YEARS = (((3.14 ** RAND_EXP) / MEDIAN_YEARS) + 1)\n`;
+                html += `Let TOTAL_PROGRESSION_MS = DEFAULT_BASE_CHANGE_YEARS * ${MS_PER_YEAR}\n`;
+                if (defaultInfo) html += `\n// Computed on last calculation: ${defaultInfo}\n`;
+            } else {
+                let total = 0;
+                Object.keys(deltaConfigs).forEach(key => {
+                    if (activeDeltas[key]) {
+                        const cfg = deltaConfigs[key];
+                        total += cfg.value;
+                        const sign = cfg.value >= 0 ? '+' : '';
+                        html += `Let DELTA_${key.toUpperCase()}_MS = ${cfg.value.toLocaleString()} ms  ${sign}${(cfg.value / MS_PER_YEAR).toFixed(1)} years\n`;
+                    }
+                });
+                html += `\nLet TOTAL_PROGRESSION_MS = ${total.toLocaleString()} ms  (${activeCount} deltas active)\n`;
+            }
+
+            html += `\nLet Z_EPOCH_MS = INPUT_EPOCH_MS + TOTAL_PROGRESSION_MS\n`;
+            html += `DELTA DATE (UTC) = new Date(Z_EPOCH_MS)`;
+            document.getElementById('math-breakdown').innerHTML = html;
+        }
+
+        document.getElementById('input').addEventListener('keypress', e => { if (e.key === 'Enter') calculateZDate(); });
+
+        window.onload = function() {
+            // Compute initial corrective values
+            updateCorrectiveValues();
+
+            // Render both sections
+            renderMainGrid();
+            renderScrollable();
+
+            updateMathBreakdown();
+            document.getElementById('median-display').innerHTML = `MEDIAN_YEARS = <span style="color:#ffcc88;">${medianYears.toFixed(3)}</span> years`;
+
+            console.log('%c✅ DELTA CALCULATOR ready • Only 4 core ON by default • Dynamic live corrective deltas (now fully real-time) • 4 new quantum deltas + quantum corrective • Fancy scrollbar', 'color:#00ff9d; font-family:monospace; font-size:13px');
+        };
+    </script>
+</body>
+</html>
