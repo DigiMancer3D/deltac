@@ -6,25 +6,25 @@ A beautiful, single-file, space-themed calculator that lets you explore computat
 
 > Only the four core deltas start **ON** by default. Everything else is OFF until you toggle it. All corrective deltas update **live** in real time.
 
-![Delta Calculator Preview](https://via.placeholder.com/800x400/05050f/00ff9d?text=Delta+Calculator+Screenshot)  
+![Delta Calculator Preview]([https://via.placeholder.com/800x400/05050f/00ff9d?text=Delta+Calculator+Screenshot](https://raw.githubusercontent.com/DigiMancer3D/deltac/refs/heads/main/Screenshot_20260413_122816.png))  
 *(Open the HTML file to see the full interactive experience)*
 
 ## ✨ Features
 
-- **Core progression deltas** (always start ON):
+- **Core progression deltas**:
   - 👤 → ⚙️ Human Computers → 1st Machine Computers
   - ⚙️ → 🤖 1st Machine Computers → 1st AI that writes its own code
   - 🧠 → 🤖 1st LLM → 1st AI
   - 🔄 Corrective Baseline (original Apollo-era anchor)
 
-- **Huge scrollable library** of additional deltas (after Moore’s Law):
+- **Huge scrollable library** of additional deltas:
   - USA, Global, Britain, Viking history
   - Religious timelines
   - Society & fame spans
   - Human & tech lifespan deltas
   - **4 brand-new Quantum Computing deltas**
 
-- **Live Dynamic Corrective Deltas** (all negative by design):
+- **Live Dynamic Corrective Deltas**:
   - Religious Corrective
   - Society Corrective
   - **Quantum Corrective** (new — based on all computer-based deltas)
@@ -47,7 +47,7 @@ A beautiful, single-file, space-themed calculator that lets you explore computat
 ## 🚀 How to Use
 
 1. Download or copy the entire HTML file.
-2. Save it as `delta-calculator.html`.
+2. Save it as `deltac.html`.
 3. Open the file in any modern browser (Chrome, Firefox, Edge, Safari).
 4. Toggle deltas on/off.
 5. Enter a date/epoch or click **NOW**.
