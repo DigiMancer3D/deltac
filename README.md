@@ -6,7 +6,7 @@ A beautiful, single-file, space-themed calculator that lets you explore computat
 
 > Only the four core deltas start **ON** by default. Everything else is OFF until you toggle it. All corrective deltas update **live** in real time.
 
-![Delta Calculator Preview](https://raw.githubusercontent.com/DigiMancer3D/deltac/refs/heads/main/Screenshot_20260413_122816.png)  
+![Delta Calculator Preview](https://raw.githubusercontent.com/DigiMancer3D/deltac/refs/heads/main/Screenshot_20260413_135332.png)  
 *(Open the HTML file to see the full interactive experience)*
 
 ## ✨ Features
