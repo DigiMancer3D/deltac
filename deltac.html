@@ -181,7 +181,6 @@
             transform: translateX(32px);
         }
 
-        /* SCROLLABLE SECTION */
         .scrollable-deltas {
             max-height: 480px;
             overflow-y: auto;
@@ -602,7 +601,7 @@
             const key = e.target.dataset.key;
             activeDeltas[key] = e.target.checked;
             updateCorrectiveValues();
-            renderScrollable();   // only re-render scrollable (core grid stays intact)
+            renderScrollable();
             if (document.getElementById('result').style.display === 'block') {
                 calculateZDate();
             }
@@ -683,15 +682,14 @@
             document.getElementById('math-breakdown').innerHTML = html;
         }
 
-        // Use DOMContentLoaded for maximum compatibility (fixes Gist preview / Firefox issues)
+        // Use DOMContentLoaded for maximum compatibility
         document.addEventListener('DOMContentLoaded', function() {
             updateCorrectiveValues();
             renderMainGrid();
             renderScrollable();
             updateMathBreakdown();
-            document.getElementById('median-display').innerHTML = `MEDIAN_YEARS = <span style="color:#ffcc88;">${medianYears.toFixed(3)}</span> years`;
 
-            console.log('%c✅ DELTA CALCULATOR ready • Fixed rendering for Gist preview / Firefox / LibreWolf • Dynamic live corrective deltas', 'color:#00ff9d; font-family:monospace; font-size:13px');
+            console.log('%c✅ DELTA CALCULATOR ready • Fixed for Gist preview', 'color:#00ff9d; font-family:monospace; font-size:13px');
         });
     </script>
 </body>
