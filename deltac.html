@@ -253,7 +253,7 @@
         const computerBasedKeys = ['stage1','stage2','stage3','moore','gpuLife','cpuLife','pc808','windowsPC','linuxPC','desktopLife','laptopLife','phoneLife','iphoneAndroidDiff','quantum1','quantum2','quantum3','quantum4'];
 
         const totalCount = Object.keys(deltaConfigs).length;
-        let activeDeltas = { stage1: true, stage2: true, stage3: true, baseline: true };
+        let activeDeltas = { stage1: true, stage2: true, stage3: true, baseline: true , quantumCorrective: true , ultimateCorrective: true };
 
         function computeReligiousCorrective() {
             const groupSum = religiousGroupKeys.reduce((acc, k) => acc + (activeDeltas[k] ? deltaConfigs[k].value : 0), 0);
@@ -441,7 +441,7 @@
             initFromStaticHTML();
             attachListeners();
             updateMathBreakdown();
-            console.log('%c✅ DELTA CALCULATOR ready • Dynamic years + all corrective deltas restored', 'color:#00ff9d; font-family:monospace; font-size:13px');
+            console.log('%c✅ DELTA CALCULATOR ready', 'color:#00ff9d; font-family:monospace; font-size:13px');
         });
     </script>
 </body>
