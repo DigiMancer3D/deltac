@@ -183,7 +183,7 @@
 
         /* SCROLLABLE SECTION */
         .scrollable-deltas {
-            max-height: 480px; /* ~3 rows visible */
+            max-height: 480px;
             overflow-y: auto;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
@@ -340,14 +340,10 @@
                 <h3 style="margin:0 0 1.4rem; font-size:1.2rem; color:var(--silver);">PROGRESSION DELTAS • Toggle ON/OFF</h3>
 
                 <!-- Main grid: only the 4 core + Moore's Law -->
-                <div class="delta-grid" id="delta-toggles">
-                    <!-- Populated by JS -->
-                </div>
+                <div class="delta-grid" id="delta-toggles"></div>
 
-                <!-- Scrollable section: everything AFTER Moore's Law (including quantum + correctives) -->
-                <div id="scrollable-wrapper" class="scrollable-deltas">
-                    <!-- Populated by JS -->
-                </div>
+                <!-- Scrollable section: everything AFTER Moore's Law -->
+                <div id="scrollable-wrapper" class="scrollable-deltas"></div>
             </div>
 
             <div class="input-group" style="display:flex; gap:14px; flex-wrap:wrap; justify-content:center; align-items:flex-end;">
@@ -408,7 +404,7 @@
             baseline: { label: "🔄", value: BASELINE_DELTA, desc: "Corrective Baseline (original v1 limited-scope Human → Machine — positive anchor)" },
             moore: { label: "📈 → ⚡", value: Date.UTC(2024,0,1) - Date.UTC(1965,0,1), desc: "Moore's Law period (1965 paper → 2024 current observation)" },
 
-            // === SCROLLABLE SECTION STARTS HERE ===
+            // Scrollable section
             usa1: { label: "🦅 → 🌕", value: Date.UTC(1969,6,20) - Date.UTC(1776,6,4), desc: "USA Declaration of Independence → First Moon Landing" },
             usa2: { label: "🚂 → 🌐", value: Date.UTC(1991,0,1) - Date.UTC(1869,5,10), desc: "First US Transcontinental Railroad → Public Internet" },
             usa3: { label: "🚗 → ⚡", value: Date.UTC(2023,0,1) - Date.UTC(1908,0,1), desc: "Ford Model T → Tesla Cybertruck" },
@@ -422,7 +418,7 @@
             viking2: { label: "🛶 → 🚢", value: Date.UTC(1800,0,1) - Date.UTC(800,0,1), desc: "Viking longship → First practical steamship" },
             viking3: { label: "🪓 → ✝️", value: Date.UTC(1100,0,1) - Date.UTC(850,0,1), desc: "Viking raids peak → Christianization of Scandinavia" },
             jesusCatholic: { label: "⛪ → ✝️", value: Date.UTC(30,0,1) - Date.UTC(380,0,1), desc: "Start of Roman Catholic Church → Death of Jesus" },
-            christianityRomans: { label: "📜 → 🕊️", value: Date.UTC(30,0,1) - Date.UTC(112,0,1), desc: "First Roman mention of Jesus → Start of Christianity" },
+            christianityRomans: { label: "📜 → 🕊️", value: Date.UTC(30,0,1) - Date.UTC(112,0,1), desc: "Start of Christianity → First Roman mention of Jesus" },
             popeAvg: { label: "⛪ → 👑", value: 8 * MS_PER_YEAR, desc: "Average papal reign length" },
             kingAvg: { label: "👑 → 🏰", value: 20 * MS_PER_YEAR, desc: "Average major king / monarch reign length" },
             presidentAvg: { label: "🦅 → 📅", value: 5.5 * MS_PER_YEAR, desc: "Average US President term length" },
@@ -450,38 +446,31 @@
             quantum2: { label: "🔬 → ☁️", value: Date.UTC(2023,0,1) - Date.UTC(2016,5,1), desc: "IBM Quantum Experience cloud launch (2016) → 2023 scaling" },
             quantum3: { label: "🧪 → 🌐", value: Date.UTC(2024,0,1) - Date.UTC(2021,0,1), desc: "Quantum error correction breakthrough (2021) → Current quantum internet prototypes" },
             quantum4: { label: "📡 → ⚛️", value: Date.UTC(2025,0,1) - Date.UTC(2022,0,1), desc: "Quantum networking milestones (2020) → Projected quantum advantage (2025)" },
-
-            // Corrective deltas (dynamic - values set at runtime)
             religiousCorrective: { label: "✝️ → 📏", value: 0, desc: "Religious Corrective — live sum of religious deltas ÷ total deltas (negative)" },
             societyCorrective: { label: "🏛️ → 📏", value: 0, desc: "Society Corrective — live sum of society deltas ÷ total deltas (negative)" },
             quantumCorrective: { label: "⚛️ → 📏", value: 0, desc: "Quantum Corrective — live sum of all computer-based deltas ÷ total deltas (negative)" },
             ultimateCorrective: { label: "🛡️ → ⚖️", value: 0, desc: "Ultimate Corrective — live sum of ALL deltas ÷ total deltas (negative)" }
         };
 
-        // Groups for dynamic corrective calculation
         const religiousGroupKeys = ['jesusCatholic', 'christianityRomans', 'popeAvg', 'kingAvg'];
         const societyGroupKeys = ['ytFame','twitchFame','famousPerson','lifespanBC','lifespanMedieval','lifespan1800s','lifespan1900s','lifespan2000s','lifespanCurrent','gpuLife','cpuLife','pc808','windowsPC','linuxPC','desktopLife','laptopLife','phoneLife','iphoneAndroidDiff'];
         const computerBasedKeys = ['stage1','stage2','stage3','moore','gpuLife','cpuLife','pc808','windowsPC','linuxPC','desktopLife','laptopLife','phoneLife','iphoneAndroidDiff','quantum1','quantum2','quantum3','quantum4'];
 
         const totalCount = Object.keys(deltaConfigs).length;
 
-        // Only these four start ON
         let activeDeltas = {
             stage1: true,
             stage2: true,
             stage3: true,
-            baseline: true,
-            quantumCorrective: true,
-            ultimateCorrective: true
+            baseline: true
         };
         Object.keys(deltaConfigs).forEach(key => {
             if (!(key in activeDeltas)) activeDeltas[key] = false;
         });
 
-        // Dynamic corrective computation functions
         function computeReligiousCorrective() {
             const groupSum = religiousGroupKeys.reduce((acc, k) => acc + (activeDeltas[k] ? deltaConfigs[k].value : 0), 0);
-            if (groupSum === 0) return -(Math.random() * 8 + 1); // random -1 to -9 when no base religious deltas active
+            if (groupSum === 0) return -(Math.random() * 8 + 1);
             return -Math.floor((groupSum / totalCount) * 10) / 10;
         }
 
@@ -508,7 +497,6 @@
             return -Math.floor((allActiveSum / totalCount) * 10) / 10;
         }
 
-        // Median
         let medianYears;
         function computeMedianYears() {
             const yearVals = Object.values(deltaConfigs).map(cfg => cfg.value / MS_PER_YEAR);
@@ -613,14 +601,8 @@
         function handleToggleChange(e) {
             const key = e.target.dataset.key;
             activeDeltas[key] = e.target.checked;
-
-            // Recompute all corrective values (they are now fully live)
             updateCorrectiveValues();
-
-            // Re-render only the scrollable section (preserves main grid)
-            renderScrollable();
-
-            // If a result is visible, update it immediately
+            renderScrollable();   // only re-render scrollable (core grid stays intact)
             if (document.getElementById('result').style.display === 'block') {
                 calculateZDate();
             }
@@ -701,21 +683,16 @@
             document.getElementById('math-breakdown').innerHTML = html;
         }
 
-        document.getElementById('input').addEventListener('keypress', e => { if (e.key === 'Enter') calculateZDate(); });
-
-        window.onload = function() {
-            // Compute initial corrective values
+        // Use DOMContentLoaded for maximum compatibility (fixes Gist preview / Firefox issues)
+        document.addEventListener('DOMContentLoaded', function() {
             updateCorrectiveValues();
-
-            // Render both sections
             renderMainGrid();
             renderScrollable();
-
             updateMathBreakdown();
             document.getElementById('median-display').innerHTML = `MEDIAN_YEARS = <span style="color:#ffcc88;">${medianYears.toFixed(3)}</span> years`;
 
-            console.log('%c✅ DELTA CALCULATOR ready • Only 4 core ON by default • Dynamic live corrective deltas (now fully real-time) • 4 new quantum deltas + quantum corrective • Fancy scrollbar', 'color:#00ff9d; font-family:monospace; font-size:13px');
-        };
+            console.log('%c✅ DELTA CALCULATOR ready • Fixed rendering for Gist preview / Firefox / LibreWolf • Dynamic live corrective deltas', 'color:#00ff9d; font-family:monospace; font-size:13px');
+        });
     </script>
 </body>
 </html>
